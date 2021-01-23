@@ -16,7 +16,7 @@ const hashPassword = async (password) => {
   return hashedPassword;
 };
 
-const userSchema = async ({
+const User = async ({
   name,
   email,
   password,
@@ -32,16 +32,4 @@ const userSchema = async ({
   history,
 });
 
-// (async function () {
-//   const newUser = await userSchema({
-//     name: "Michael",
-//     email: "testemail",
-//     password: "password",
-//     about: "about",
-//   });
-
-//   console.log(`newUser: `, newUser);
-//   console.log(`bcrypt.compare: `, await bcrypt.compare("password", newUser.password));
-// })();
-
-exports.user = userSchema;
+exports.User = User;
