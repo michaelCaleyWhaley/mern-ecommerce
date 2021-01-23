@@ -1,10 +1,20 @@
-// const MongoClient = require("mongodb").MongoClient;
-// const assert = require("assert");
+const { User } = require("../models/user");
 
-// // DATABASE
-// const dbURL = process.env.DATABASE;
-// const dbName = "ecommerce";
+exports.signup = async (req, res) => {
+  const { name, email, password, about } = req.body;
+  if ((!name, !email, !password, !about)) {
+    res.send("Creds missing");
+    return;
+  }
 
-exports.main = (req, res) => {
+  const newUser = await User({
+    name,
+    email,
+    password,
+    about,
+  });
+
+  console.log(`newUser: `, newUser);
+
   res.send("hello from controller");
 };
