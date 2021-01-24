@@ -15,21 +15,25 @@ exports.signup = async (req, res) => {
     about,
   });
 
-  mongoConnect(async (db) => {
-    const collection = db.collection("users");
+  try {
+    mongoConnect(async (db) => {
+      const collection = db.collection("users");
 
-    const existingUser = await collection.findOne({ email: newUser.email });
-    if (existingUser) {
-      res.status(400).json({ error: "Email already registered." });
-      return;
-    }
+      const existingUser = await collection.findOne({ email: newUser.email });
+      if (existingUser) {
+        res.status(400).json({ error: "Email already registered." });
+        return;
+      }
 
-    await collection.insertOne(newUser);
+      await collection.insertOne(newUser);
 
-    newUser.password = undefined;
+      newUser.password = undefined;
 
-    res
-      .status(200)
-      .json({ success: true, user: { name: newUser.name, email: newUser } });
-  });
+      res
+        .status(200)
+        .json({ success: true, user: { name: newUser.name, email: newUser } });
+    });
+  } catch (e) {
+    res.status(500).json({ error: e });
+  }
 };
