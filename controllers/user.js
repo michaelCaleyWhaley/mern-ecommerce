@@ -1,13 +1,14 @@
+const { validationResult } = require("express-validator");
 const { mongoConnect } = require("../helpers/mongoConnect.js");
 const { User } = require("../models/user");
 
 exports.signup = async (req, res) => {
-  const { name, email, password, about = "" } = req.body;
-  if (!name || !email || !password) {
-    res.send("Creds missing");
-    return;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
   }
 
+  const { name, email, password, about = "" } = req.body;
   const newUser = await User({
     name,
     email,
@@ -37,3 +38,5 @@ exports.signup = async (req, res) => {
     res.status(500).json({ error: e });
   }
 };
+
+exports.signin = (req, res) => {};

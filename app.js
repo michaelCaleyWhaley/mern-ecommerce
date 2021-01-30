@@ -13,7 +13,9 @@ app.use(express.json());
 app.use(cookieParser());
 
 // ROUTES
-app.get("/", (req, res) => {res.send('root')});
+app.get("/", (req, res) => {
+  res.send("root");
+});
 app.use("/api", userRoutes);
 
 const port = process.env.PORT || 8000;
