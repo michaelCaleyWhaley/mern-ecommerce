@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
 const { mongoConnect } = require("../helpers/mongoConnect.js");
-const { User } = require("../models/user");
+const { User, authenticate } = require("../models/user");
 
 exports.signup = async (req, res) => {
   const errors = validationResult(req);
@@ -42,22 +43,32 @@ exports.signup = async (req, res) => {
 exports.signin = (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ error: errors.array() });
   }
 
   const { email, password } = req.body;
-  console.log(`email: `, email);
 
-  res.send('test');
-  
+  try {
+    mongoConnect(async (db) => {
+      const collection = db.collection("users");
 
-  // try {
-  //   mongoConnect(async (db) => {
-  //     const collection = db.collection("users");
+      const existingUser = await collection.findOne({ email });
+      if (!existingUser) {
+        res.status(400).json({ error: "Email is not registered." });
+      }
 
-  //     const existingUser = await collection.findOne({ email });
-  //   });
-  // } catch (e) {
-  //   res.status(500).json({ error: e });
-  // }
+      const isMatch = await authenticate(password, existingUser.password);
+      if (!isMatch) {
+        res.status(401).json({ error: "Email and password don't match." });
+      }
+
+      const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET);
+      res.cookie("t", token, { expire: new Date() + 9999 });
+
+      const { _id, name, role } = existingUser;
+      res.send({ token, user: { _id, name, role, email } });
+    });
+  } catch (e) {
+    res.status(500).json({ error: e });
+  }
 };

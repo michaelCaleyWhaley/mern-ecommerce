@@ -16,6 +16,11 @@ const hashPassword = async (password) => {
   return hashedPassword;
 };
 
+const authenticate = async (plainText, hashedText) => {
+  const isMatch = await bcrypt.compare(plainText, hashedText);
+  return isMatch;
+};
+
 const User = async ({
   name,
   email,
@@ -32,4 +37,4 @@ const User = async ({
   history,
 });
 
-exports.User = User;
+module.exports = { User, authenticate };
