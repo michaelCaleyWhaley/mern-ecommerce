@@ -39,4 +39,25 @@ exports.signup = async (req, res) => {
   }
 };
 
-exports.signin = (req, res) => {};
+exports.signin = (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { email, password } = req.body;
+  console.log(`email: `, email);
+
+  res.send('test');
+  
+
+  // try {
+  //   mongoConnect(async (db) => {
+  //     const collection = db.collection("users");
+
+  //     const existingUser = await collection.findOne({ email });
+  //   });
+  // } catch (e) {
+  //   res.status(500).json({ error: e });
+  // }
+};
