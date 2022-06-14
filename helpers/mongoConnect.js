@@ -2,11 +2,12 @@ const MongoClient = require("mongodb").MongoClient;
 const assert = require("assert");
 
 exports.mongoConnect = async (cb) => {
+  const { DATABASE_NAME, DATABASE_USERNAME, DATABASE_PASSWORD } = process.env;
   // Connection URL
-  const url = process.env.DATABASE;
+  const dbUsername = encodeURIComponent(DATABASE_USERNAME);
+  const dbPassword = encodeURIComponent(DATABASE_PASSWORD);
 
-  // Database Name
-  const dbName = process.env.DATABASE_NAME;
+  const url = `mongodb+srv://${dbUsername}:${dbPassword}@cluster0.wdqdf.mongodb.net/?retryWrites=true&w=majority`;
 
   // Use connect method to connect to the server
   MongoClient.connect(
@@ -14,7 +15,7 @@ exports.mongoConnect = async (cb) => {
     { useUnifiedTopology: true },
     async (err, client) => {
       assert.equal(null, err);
-      const db = client.db(dbName);
+      const db = client.db(DATABASE_NAME);
 
       await cb(db);
 
